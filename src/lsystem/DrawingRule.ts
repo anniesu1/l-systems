@@ -4,18 +4,18 @@
 
 import { vec3 } from 'gl-matrix';
 
-export default class DrawingRule {
-    // TODO
-    
-    position: vec3;
-    orientation: vec3;
+export default class DrawingRule {    
+    drawFunc: any; // This drawing function will modify a given turtle
 
-    constructor(pos: vec3, orient: vec3) {
-        this.position = pos;
-        this.orientation = orient;
+    // Pass in a drawing function
+    constructor(func: any) {
+        this.drawFunc = func;
     }
 
-    moveForward() {
-        //add(this.position, this.position, this.orientation * 10.0);
-    }
+    // List of possible drawing rules thus far:
+    // F: move forward a certain distance and draw (e.g. 10 pixels)
+    // +: turn left 30 degrees
+    // -: turn right 30 degrees
+    // [: push turtle
+    // ]: pop turtle
 }

@@ -27,12 +27,11 @@ void main()
 
     vec3 offset = vs_Translate;
     mat4 t = mat4(vs_Transform1, vs_Transform2, vs_Transform3, vs_Transform4);
-    if (vs_Transform1[0] != 20.0) {
-        fs_Col = vec4(1.0, 0.0, 0.0, 1.0);
-    } else {
-        fs_Col = vec4(0.0, 1.0, 0.0, 1.0);
-    }
-    // Where do I multiply t? 
+    // if (vs_Transform1[0] != 20.0) {
+    //     fs_Col = vec4(1.0, 0.0, 0.0, 1.0);
+    // } else {
+    //     fs_Col = vec4(0.0, 1.0, 0.0, 1.0);
+    // }
 
     //offset.z = (sin((u_Time + offset.x) * 3.14159 * 0.1) + cos((u_Time + offset.y) * 3.14159 * 0.1)) * 1.5;
 

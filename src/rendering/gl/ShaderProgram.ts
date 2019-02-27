@@ -57,6 +57,7 @@ class ShaderProgram {
 
     this.attrPos = gl.getAttribLocation(this.prog, "vs_Pos");
     this.attrCol = gl.getAttribLocation(this.prog, "vs_Col");
+    this.attrNor = gl.getAttribLocation(this.prog, "vs_Nor");
     this.attrTranslate = gl.getAttribLocation(this.prog, "vs_Translate");
     this.attrUV = gl.getAttribLocation(this.prog, "vs_UV");
     this.unifModel      = gl.getUniformLocation(this.prog, "u_Model");
@@ -168,25 +169,27 @@ class ShaderProgram {
     if (this.attrTransform1 != -1 && d.bindTransform1()) {
       gl.enableVertexAttribArray(this.attrTransform1);
       gl.vertexAttribPointer(this.attrTransform1, 4, gl.FLOAT, false, 0, 0);
-      //gl.vertexAttribPointer(this.attrTransform4, 4, gl.FLOAT, false, 0, 0); // where do the values come from?
+      gl.vertexAttribDivisor(this.attrTransform1, 1);
     } 
 
     if (this.attrTransform2 != -1 && d.bindTransform2()) {
       gl.enableVertexAttribArray(this.attrTransform2);
       gl.vertexAttribPointer(this.attrTransform2, 4, gl.FLOAT, false, 0, 0);
+      gl.vertexAttribDivisor(this.attrTransform2, 1);
     }
 
     if (this.attrTransform3 != -1 && d.bindTransform3()) {
       gl.enableVertexAttribArray(this.attrTransform3);
       gl.vertexAttribPointer(this.attrTransform3, 4, gl.FLOAT, false, 0, 0);
+      gl.vertexAttribDivisor(this.attrTransform3, 1);
     }
 
     if (this.attrTransform4 != -1 && d.bindTransform4()) {
       gl.enableVertexAttribArray(this.attrTransform4);
       gl.vertexAttribPointer(this.attrTransform4, 4, gl.FLOAT, false, 0, 0);
+      gl.vertexAttribDivisor(this.attrTransform4, 1);
     }
     
-
 
 
     if (this.attrUV != -1 && d.bindUV()) {

@@ -1,4 +1,4 @@
-import {vec3, vec4} from 'gl-matrix';
+import {vec3, vec4, mat4} from 'gl-matrix';
 import * as Stats from 'stats-js';
 import * as DAT from 'dat-gui';
 import Square from './geometry/Square';
@@ -17,7 +17,8 @@ import LSystem from './lsystem/LSystem';
 // This will be referred to by dat.GUI's functions that add GUI elements.
 const controls = {
   axiom: "F",
-  iterations: 1
+  iterations: 1,
+  rotation_angle: Math.PI / 6.0,
 };
 
 let square: Square;
@@ -25,11 +26,14 @@ let screenQuad: ScreenQuad;
 let time: number = 0.0;
 
 let obj0: string = readTextFile('../objs/wahoo.obj'); // TODO: create an obj file
-let mesh: Mesh = new Mesh(obj0, vec3.fromValues(0.0, 0.0, 0.0));
-//mesh.create();
+let mesh: Mesh;
 
-let lSystem: LSystem = new LSystem(controls.axiom, controls.iterations);
+
+let branchT: mat4[] = [];
+let leafT: mat4[] = [];
+let lSystem: LSystem = new LSystem(controls.axiom, controls.iterations, controls.rotation_angle, branchT, leafT);
 lSystem.expandGrammar(); // This should print out the expanded grammar
+lSystem.draw(); // This updates branchT and leafT
 
 function loadScene() {
   square = new Square();
@@ -37,11 +41,15 @@ function loadScene() {
   screenQuad = new ScreenQuad();
   screenQuad.create();
 
+  mesh = new Mesh(obj0, vec3.fromValues(0.0, 0.0, 0.0));
+  mesh.create();
+
   // Set up instanced rendering data arrays here.
   // This example creates a set of positional
   // offsets and gradiated colors for a 100x100 grid
   // of squares, even though the VBO data for just
   // one square is actually passed to the GPU
+
   let offsetsArray = [];
   let colorsArray = [];
   let n: number = 100.0;
@@ -49,38 +57,81 @@ function loadScene() {
   let transform2Array = [];
   let transform3Array = [];
   let transform4Array = [];
-  for(let i = 0; i < n; i++) {
-    for(let j = 0; j < n; j++) {
-      offsetsArray.push(i);
-      offsetsArray.push(j);
-      offsetsArray.push(0);
 
-      transform1Array.push(0.5);
-      transform1Array.push(0.0);
-      transform1Array.push(0.0);
-      transform1Array.push(0.0);
+  // We will no longer need offsets (handled in the transformation array)
+  for (let i = 0; i < branchT.length; i++) {
+    let T = branchT[i];
+    console.log("T[i]" + T);
 
-      transform2Array.push(0.0);
-      transform2Array.push(1.0);
-      transform2Array.push(0.0);
-      transform2Array.push(0.0);
+    // Dummy - todo, get rid of offsets
+    offsetsArray.push(0);
+    offsetsArray.push(0);
+    offsetsArray.push(0);
 
-      transform3Array.push(0.0);
-      transform3Array.push(0.0);
-      transform3Array.push(1.0);
-      transform3Array.push(0.0);
+    // Column 1
+    transform1Array.push(T[0]);
+    transform1Array.push(T[1]);
+    transform1Array.push(T[2]);
+    transform1Array.push(T[3]);
 
-      transform4Array.push(0.0);
-      transform4Array.push(0.0);
-      transform4Array.push(0.0);
-      transform4Array.push(1.0);
+    // Column 2
+    transform2Array.push(T[4]);
+    transform2Array.push(T[5]);
+    transform2Array.push(T[6]);
+    transform2Array.push(T[7]);
 
-      colorsArray.push(i / n);
-      colorsArray.push(j / n);
-      colorsArray.push(1.0);
-      colorsArray.push(1.0); // Alpha channel
-    }
+    // Column 3
+    transform3Array.push(T[8]);
+    transform3Array.push(T[9]);
+    transform3Array.push(T[10]);
+    transform3Array.push(T[11]);
+
+    // Column 4
+    transform4Array.push(T[12]);
+    transform4Array.push(T[13]);
+    transform4Array.push(T[14]);
+    transform4Array.push(T[15]);
+
+    // Color
+    colorsArray.push(1.0);
+    colorsArray.push(0.0);
+    colorsArray.push(0.0);
+    colorsArray.push(1.0);
+
   }
+
+  // for(let i = 0; i < n; i++) {
+  //   for(let j = 0; j < n; j++) {
+  //     offsetsArray.push(i);
+  //     offsetsArray.push(j);
+  //     offsetsArray.push(0);
+
+  //     transform1Array.push(0.5);
+  //     transform1Array.push(0.0);
+  //     transform1Array.push(0.0);
+  //     transform1Array.push(0.0);
+
+  //     transform2Array.push(0.0);
+  //     transform2Array.push(1.0);
+  //     transform2Array.push(0.0);
+  //     transform2Array.push(0.0);
+
+  //     transform3Array.push(0.0);
+  //     transform3Array.push(0.0);
+  //     transform3Array.push(1.0);
+  //     transform3Array.push(0.0);
+
+  //     transform4Array.push(0.0);
+  //     transform4Array.push(0.0);
+  //     transform4Array.push(0.0);
+  //     transform4Array.push(1.0);
+
+  //     colorsArray.push(i / n);
+  //     colorsArray.push(j / n);
+  //     colorsArray.push(1.0);
+  //     colorsArray.push(1.0); // Alpha channel
+  //   }
+  // }
   let offsets: Float32Array = new Float32Array(offsetsArray);
   let colors: Float32Array = new Float32Array(colorsArray);
   let transform1: Float32Array = new Float32Array(transform1Array);
@@ -90,7 +141,7 @@ function loadScene() {
 
   square.setInstanceVBOs(offsets, colors, transform1, transform2, 
                          transform3, transform4);
-  square.setNumInstances(n * n); // grid of "particles"
+  square.setNumInstances(branchT.length); // grid of "particles"
 }
 
 function main() {
@@ -118,12 +169,14 @@ function main() {
   // Initial call to load scene
   loadScene();
 
-  const camera = new Camera(vec3.fromValues(50, 50, 10), vec3.fromValues(50, 50, 0));
+  // Camera is looking at the origin
+  const camera = new Camera(vec3.fromValues(10, 10, 10), vec3.fromValues(0, 0, 0));
 
   const renderer = new OpenGLRenderer(canvas);
   renderer.setClearColor(0.2, 0.2, 0.2, 1);
   //gl.enable(gl.BLEND);
-  gl.blendFunc(gl.ONE, gl.ONE); // Additive blending
+  //gl.blendFunc(gl.ONE, gl.ONE); // Additive blending
+  gl.enable(gl.DEPTH_TEST);
 
   const instancedShader = new ShaderProgram([
     new Shader(gl.VERTEX_SHADER, require('./shaders/instanced-vert.glsl')),

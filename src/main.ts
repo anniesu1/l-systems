@@ -9,13 +9,15 @@ import {setGL} from './globals';
 import ShaderProgram, {Shader} from './rendering/gl/ShaderProgram';
 import {readTextFile} from './globals';
 import Mesh from './geometry/Mesh';
+import LSystem from './lsystem/LSystem';
 
 // Note: auto-indent is CMD+K, CMD+F
 
 // Define an object with application parameters and button callbacks
 // This will be referred to by dat.GUI's functions that add GUI elements.
 const controls = {
-  axiom: "FX"
+  axiom: "F",
+  iterations: 1
 };
 
 let square: Square;
@@ -25,6 +27,9 @@ let time: number = 0.0;
 let obj0: string = readTextFile('../objs/wahoo.obj'); // TODO: create an obj file
 let mesh: Mesh = new Mesh(obj0, vec3.fromValues(0.0, 0.0, 0.0));
 //mesh.create();
+
+let lSystem: LSystem = new LSystem(controls.axiom, controls.iterations);
+lSystem.expandGrammar(); // This should print out the expanded grammar
 
 function loadScene() {
   square = new Square();

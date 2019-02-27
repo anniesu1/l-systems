@@ -1,7 +1,8 @@
 import { vec3, quat } from 'gl-matrix';
-import Turtle from 'Turtle';
-import DrawingRule from 'DrawingRule';
-import ExpansionRule from 'ExpansionRule';
+import Turtle from './Turtle';
+import ExpansionRule from './ExpansionRule';
+import DrawingRule from './DrawingRule';
+
 
 export default class LSystem {
     turtle: Turtle = new Turtle(vec3.fromValues(0, 0, 0), 
@@ -23,18 +24,25 @@ export default class LSystem {
         // Set drawing rules -- TODO: where do we define the functions?
         this.setInitialDrawingRules();
 
-        // Set expansion rules -- each rule may contain multiple possible expansions,
-        // each of which has an associated probability: (k, v) = (probability, successor)
+        // Set expansion rules
         let fExpansions = new Map();
         fExpansions.set(1.0, "F[-F]F[+F][F]"); // TODO: tweak expansion rule
         let fRule = new ExpansionRule("F", fExpansions);
+        this.expansionRules.set("F", fRule);
     }
 
     expandSingleChar(char: string) : string {
         // Use the expansion rule(s) that correspond with the given char
+        console.log("char = " + char);
         let rule: ExpansionRule;
         rule = this.expansionRules.get(char);
-        return rule.expand();
+        let expansion = rule.expand();
+        if (expansion === "" || !rule ) {
+            console.log("char is returned");
+            return char;
+        }
+        console.log("expansion is returned");
+        return expansion;
     }
 
     // Iterate over each char in the axiom and replace it with its expansion
@@ -103,7 +111,8 @@ export default class LSystem {
         // Note: Should DrawingRules be updating Turtles? Yes
         for (let i = 0; i < this.grammar.length; i++) {
             let currChar = this.grammar.charAt(i);
-            let func = this.drawingRules.get(currChar);
+            let dr = this.drawingRules.get(currChar);
+            let func = dr.drawFunc;
             if (func) {
                 // TODO: should I call the func with the current turtle and stack of turtles as arguments?
                 this.turtle = func();

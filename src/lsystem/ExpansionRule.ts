@@ -5,10 +5,13 @@
 // probability by querying a Map<string, ExpansionRule>.
 
 import { vec3 } from 'gl-matrix';
+import { exists } from 'fs';
 
 export default class ExpansionRule {
+    // A rule may contain multiple possible expansions, each of which has an 
+    // associated probability: (k, v) = (probability, successor)
     precondition: string;
-    expansions: Map<number, string> = new Map(); // Maps a character to its expansion
+    expansions: Map<number, string> = new Map(); 
 
     constructor(oldChar: string, expansions: Map<number, string>) {
         this.precondition = oldChar;
@@ -20,13 +23,20 @@ export default class ExpansionRule {
         let sumProb = 0.0;
         let rand = Math.random();
         
+        let output = "";
+
         // Iterate over each pair inside expansions
         this.expansions.forEach((successor: string, prob: number) => {
             sumProb += prob;
+            console.log("sumProb:" + sumProb);
             if (rand < sumProb) {
-                return successor;
+                console.log("return successor: " + successor);
+                output = successor;
+                return;
             }
         });
-        return "";
+
+        console.log("output: " + output);
+        return output;
     }
 }

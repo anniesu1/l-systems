@@ -94,6 +94,7 @@ export default class LSystem {
             let copiedTurtle = self.turtle.makeCopy();
             console.log("copiedTurtle pos: " + copiedTurtle.position);  
             self.turtleHistory.push(copiedTurtle);
+            self.turtle.depth++;
         };
 
         function turnLeft() {
@@ -134,7 +135,7 @@ export default class LSystem {
 
         function drawBranch() {
             console.log("****draw branch****");
-            self.turtle.moveForward(1.5);
+            self.turtle.moveForward(1.8);
             self.branchT.push(self.turtle.getTransformationMatrix());
             // Is this the equivalent of "move forward" ?
             // Draw from main
@@ -189,14 +190,4 @@ export default class LSystem {
             }
         }
     }
-
-    pushTurtle() : void {
-
-    }
-
-    // Pop the turtleHistory stack and set turtle's members to that Turtle's members
-    popTurtle() : void {
-
-    }
-
 }

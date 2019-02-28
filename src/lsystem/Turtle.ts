@@ -10,6 +10,7 @@ export default class Turtle {
     //currOrientation: vec3 = vec3.create();
     orientation: quat;
     depth: number = 0;
+    scaleFalloff: number = 0.8;
 
     constructor(pos: vec3, orient: quat, depth: number) {
         this.position = pos;
@@ -101,11 +102,17 @@ export default class Turtle {
         let R: mat4 = mat4.create();
         mat4.fromQuat(R, this.orientation);
 
-        // Scale
+        // Scale, based on depth
+        let S: mat4 = mat4.create();
+        let scaleTuner = Math.pow(this.scaleFalloff, this.depth);
+        console.log("scaleTuner: " + scaleTuner);
+        console.log("depth = " + this.depth);
+        mat4.fromScaling(S, vec3.fromValues(0.5 * scaleTuner, 2 * scaleTuner, 0.5 * scaleTuner));
 
         // Multiply together
         let transformation: mat4 = mat4.create();
-        return mat4.multiply(transformation, T, R);
+        mat4.multiply(transformation, R, S);
+        return mat4.multiply(transformation, T, transformation);
     }
 
     // Make a copy of this current Turtle

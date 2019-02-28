@@ -17,7 +17,7 @@ import LSystem from './lsystem/LSystem';
 // This will be referred to by dat.GUI's functions that add GUI elements.
 const controls = {
   axiom: "F",
-  iterations: 1,
+  iterations: 3,
   rotation_angle: 30.0,
 };
 
@@ -25,7 +25,7 @@ let square: Square;
 let screenQuad: ScreenQuad;
 let time: number = 0.0;
 
-let obj0: string = readTextFile('../objs/cube.obj'); // TODO: create an obj file
+let obj0: string = readTextFile('../objs/cylinder.obj'); // TODO: create an obj file
 let mesh: Mesh;
 
 

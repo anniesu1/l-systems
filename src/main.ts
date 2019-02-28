@@ -25,7 +25,7 @@ let square: Square;
 let screenQuad: ScreenQuad;
 let time: number = 0.0;
 
-let obj0: string = readTextFile('../objs/cylinder.obj'); // TODO: create an obj file
+let obj0: string = readTextFile('../objs/cylinder.obj');
 let mesh: Mesh;
 
 let lotusFile: string = readTextFile('../objs/lotus.obj');
@@ -51,12 +51,12 @@ function loadScene() {
   lotusMesh = new Mesh(lotusFile, vec3.fromValues(0.0, 0.0, 0.0));
   lotusMesh.create();
 
-  setTransformArrays(mesh, branchT);
-  setTransformArrays(lotusMesh, leafT);
-  console.log("leafT length" +  leafT.length);
+  // TODO: tune these colors to be pretty
+  setTransformArrays(mesh, branchT, vec4.fromValues(162.0 / 255.0, 130.0 / 255.0, 114.0 / 255.0, 1.0)); // Branch
+  setTransformArrays(lotusMesh, leafT, vec4.fromValues(128.0 / 255.0, 71.0 / 255.0, 102.0 / 255.0, 1.0)); // Flower
 }
 
-function setTransformArrays(currMesh: Mesh, transforms: mat4[]) {
+function setTransformArrays(currMesh: Mesh, transforms: mat4[], col: vec4) {
   // Set up instanced rendering data arrays here.
   // This example creates a set of positional
   // offsets and gradiated colors for a 100x100 grid
@@ -105,11 +105,11 @@ function setTransformArrays(currMesh: Mesh, transforms: mat4[]) {
     transform4Array.push(T[14]);
     transform4Array.push(T[15]);
 
-    // Color (red for now)
-    colorsArray.push(1.0);
-    colorsArray.push(0.0);
-    colorsArray.push(0.0);
-    colorsArray.push(1.0);
+    // Color (brown)
+    colorsArray.push(col[0]);
+    colorsArray.push(col[1]);
+    colorsArray.push(col[2]);
+    colorsArray.push(col[3]);
   }
 
   let offsets: Float32Array = new Float32Array(offsetsArray);
@@ -142,6 +142,11 @@ function main() {
   gui.add(controls, 'iterations');
   gui.add(controls, 'rotation_angle', 0, 180);
 
+  // Set flags so we know whether to redraw the LSystem or not
+  let flagIter = controls.iterations;
+  let flagAngle = controls.rotation_angle;
+  let flagAxiom = controls.axiom;
+
   // get canvas and webgl context
   const canvas = <HTMLCanvasElement> document.getElementById('canvas');
   const gl = <WebGL2RenderingContext> canvas.getContext('webgl2');
@@ -156,7 +161,7 @@ function main() {
   loadScene();
 
   // Camera is looking at the origin
-  const camera = new Camera(vec3.fromValues(10, 10, 10), vec3.fromValues(0, 0, 0));
+  const camera = new Camera(vec3.fromValues(30, 30, 30), vec3.fromValues(0, 0, 0));
 
   const renderer = new OpenGLRenderer(canvas);
   renderer.setClearColor(0.2, 0.2, 0.2, 1);
@@ -183,14 +188,29 @@ function main() {
     gl.viewport(0, 0, window.innerWidth, window.innerHeight);
     renderer.clear();
 
-    // Update L-system TODO: do this efficiently
-    // lSystem.numIterations = controls.iterations;
-    // lSystem.grammar = controls.axiom;
-    // lSystem.rotationAngle = controls.rotation_angle;
-    // console.log("num iterations: " + lSystem.numIterations);
-    // lSystem.expandGrammar(); // This should print out the expanded grammar
-    // lSystem.draw(); // This updates branchT and leafT
-    // setTransformArrays();
+    // Update L-system
+    let doUpdate = (controls.iterations != flagIter) || (controls.axiom != flagAxiom) ||
+                   (controls.rotation_angle != flagAngle);
+    if (doUpdate) {
+      console.log('doUpdate');
+      flagIter = controls.iterations;
+      flagAxiom = controls.axiom;
+      flagAngle = controls.rotation_angle;
+      console.log('flagIter: ' + flagIter);
+      console.log('flagAxiom: ' + flagAxiom);
+      console.log('flagAngle: ' + flagAngle);
+
+      // Clear transformation matrices and make a new L-System
+      branchT = [];
+      leafT = [];
+      lSystem = new LSystem(flagAxiom, flagIter, flagAngle, branchT, leafT);
+
+      lSystem.expandGrammar(); // This should print out the expanded grammar
+      lSystem.draw(); // This updates branchT and leafT
+      setTransformArrays(mesh, branchT, vec4.fromValues(162.0 / 255.0, 130.0 / 255.0, 114.0 / 255.0, 1.0)); // Branch
+      setTransformArrays(lotusMesh, leafT, vec4.fromValues(128.0 / 255.0, 71.0 / 255.0, 102.0 / 255.0, 1.0)); // Flower
+      
+    }
 
     renderer.render(camera, flat, [screenQuad]);
     renderer.render(camera, instancedShader, [

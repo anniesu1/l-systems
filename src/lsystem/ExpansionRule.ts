@@ -28,7 +28,6 @@ export default class ExpansionRule {
         // Iterate over each pair inside the expansions map, pick an expansion at "random"
         for (const [key, value] of this.expansions) {
             sumProb += key;
-            console.log(`Key: ${key} and Value: ${value}`);
             if (rand < sumProb) {
                 output = value;
                 break;

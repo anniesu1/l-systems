@@ -7,10 +7,10 @@ import { vec3, vec4, quat, mat4 } from 'gl-matrix';
 export default class Turtle {
     position: vec3 = vec3.fromValues(0.0, 0.0, 0.0);
     up: vec3 = vec3.fromValues(0, 1, 0);
-    //currOrientation: vec3 = vec3.create();
     orientation: quat;
     depth: number = 0;
     scaleFalloff: number = 0.8;
+    heightFalloff: number = 0.5;
 
     constructor(pos: vec3, orient: quat, depth: number) {
         this.position = pos;
@@ -37,20 +37,20 @@ export default class Turtle {
     // }
 
     rotate(alpha: number, beta: number, gamma: number) {
-        // // Add randomness to the angles
+        // Add a bit of noise to the angles
         // var randX = Math.random();
-        // randX *= 10; //set the range to 0 to 10
-        // randX -= 5; //set the range to -5 to 5
+        // randX *= 10; 
+        // randX -= 5; // [-5, 5]
         // alpha += randX;
         
         // var randY = Math.random();
-        // randY *= 10; //set the range to 0 to 10
-        // randY -= 5; //set the range to -5 to 5
+        // randY *= 10;
+        // randY -= 5; // [-5, 5]
         // beta += randY;
         
         // var randZ = Math.random();
-        // randZ *= 10; //set the range to 0 to 10
-        // randZ -= 5; //set the range to -5 to 5
+        // randZ *= 10;
+        // randZ -= 5; // [-5, 5]
         // gamma += randZ;
 
         // Create a quaternion to represent the rotation
@@ -93,7 +93,7 @@ export default class Turtle {
     };
 
     // Should get its own transformation matrix
-    getTransformationMatrix() : mat4 {
+    getTransformationMatrix(geomType: string) : mat4 {
         // Translate
         let T: mat4 = mat4.create();
         mat4.fromTranslation(T, this.position); 
@@ -105,11 +105,19 @@ export default class Turtle {
         // Scale, based on depth
         let S: mat4 = mat4.create();
         let scaleTuner = Math.pow(this.scaleFalloff, this.depth);
-        console.log("scaleTuner: " + scaleTuner);
-        console.log("depth = " + this.depth);
-        mat4.fromScaling(S, vec3.fromValues(0.5 * scaleTuner, 2 * scaleTuner, 0.5 * scaleTuner));
+        let heightTuner = Math.pow(this.heightFalloff, this.depth);
 
-        // Multiply together
+        // Scaling values differ based on if we are drawing a flower or branch
+        if (geomType === 'branch') {
+            mat4.fromScaling(S, vec3.fromValues(0.2 * scaleTuner, 3.0 * heightTuner, 
+                0.2 * scaleTuner));
+        } else if (geomType === 'leaf') {
+            mat4.fromScaling(S, vec3.fromValues(0.5 * scaleTuner, 
+                                                0.5 * scaleTuner, 
+                                                0.5 * scaleTuner));
+        }
+
+        // Multiply together to form transformation matrix
         let transformation: mat4 = mat4.create();
         mat4.multiply(transformation, R, S);
         return mat4.multiply(transformation, T, transformation);

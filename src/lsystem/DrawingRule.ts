@@ -11,11 +11,4 @@ export default class DrawingRule {
     constructor(func: any) {
         this.drawFunc = func;
     }
-
-    // List of possible drawing rules thus far:
-    // F: move forward a certain distance and draw (e.g. 10 pixels)
-    // +: turn left 30 degrees
-    // -: turn right 30 degrees
-    // [: push turtle
-    // ]: pop turtle
 }

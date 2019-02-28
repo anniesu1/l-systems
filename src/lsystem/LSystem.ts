@@ -35,8 +35,14 @@ export default class LSystem {
 
         // Set expansion rules
         let fExpansions = new Map();
-        fExpansions.set(.8, "FF[-L]F[+F][L]"); // TODO: tweak expansion rules
-        fExpansions.set(.2, "FF");
+        fExpansions.set(.35, "FFL[+FL][-FL][+FL]"); // y direction
+        fExpansions.set(.32, "FF[&FL][^FL]"); // z direction
+        fExpansions.set(.33, "FF[,FL][/FL]"); // x direction
+
+        // fExpansions.set(.35, "FFL[-FL][+FL]"); // y direction
+        // fExpansions.set(.32, "FFL[&FL][^FL]"); // z direction
+        // fExpansions.set(.33, "FFL[,FL][/FL]"); // x direction
+
         let fRule = new ExpansionRule("F", fExpansions);
         this.expansionRules.set("F", fRule);
 
@@ -128,33 +134,37 @@ export default class LSystem {
         }; // +y
 
         function pitchUp() {
-            //self.turtle.rotate(0.0, -self.rotationAngle, 0.0);
+            self.turtle.rotate(0.0, -self.rotationAngle, 0.0);
         }; // -y
 
         function rollLeft() {
-            //self.turtle.rotate(0.0, 0.0, self.rotationAngle);
+            self.turtle.rotate(0.0, 0.0, self.rotationAngle);
         }; // +z
 
         function rollRight() {
-            //self.turtle.rotate(0.0, 0.0, -self.rotationAngle);
+            self.turtle.rotate(0.0, 0.0, -self.rotationAngle);
         }; // -z
 
         function turnAround() {
-            //self.turtle.rotate(0.0, Math.PI, 0.0);
+            self.turtle.rotate(0.0, Math.PI, 0.0);
         }; // +y 180 degrees
 
         function drawBranch() {
             console.log("****draw branch****");
-            self.turtle.moveForward(1.8);
-            self.branchT.push(self.turtle.getTransformationMatrix());
+            let branchHeight = 3.0 * Math.pow(self.turtle.heightFalloff, self.turtle.depth);
+            self.turtle.moveForward(0.6 * Math.pow(0.8, self.turtle.depth));
+            // self.turtle.moveForward(branchHeight);
+            self.branchT.push(self.turtle.getTransformationMatrix("branch"));
             // Is this the equivalent of "move forward" ?
             // Draw from main
             // LSystem can update the shader with the transformation matrix
         };
 
         function drawLeaf() {
-            self.turtle.moveForward(1.0);
-            self.leafT.push(self.turtle.getTransformationMatrix());
+            let branchHeight = 3.0 * Math.pow(self.turtle.heightFalloff, self.turtle.depth);
+            self.turtle.moveForward(branchHeight + 1.2 * Math.pow(0.8, self.turtle.depth));
+            //self.turtle.moveForward(1.5 * Math.pow(0.8, self.turtle.depth));
+            self.leafT.push(self.turtle.getTransformationMatrix("leaf"));
         };
 
         let popTurtleDR = new DrawingRule(popTurtle.bind(this));

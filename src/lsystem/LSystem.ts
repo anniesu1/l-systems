@@ -35,8 +35,8 @@ export default class LSystem {
 
         // Set expansion rules
         let fExpansions = new Map();
-        // fExpansions.set(1.0, "F[-F]F[+F][F]"); // TODO: tweak expansion rule
-        fExpansions.set(1.0, "F"); // TODO: tweak expansion rule
+        fExpansions.set(1.0, "F[-F]F[+F][F]"); // TODO: tweak expansion rule
+        // fExpansions.set(1.0, "F"); // TODO: tweak expansion rule
         let fRule = new ExpansionRule("F", fExpansions);
         this.expansionRules.set("F", fRule);
     }
@@ -46,8 +46,11 @@ export default class LSystem {
         // console.log("char = " + char);
         let rule: ExpansionRule;
         rule = this.expansionRules.get(char);
+        if (!rule) {
+            return char;
+        }
         let expansion = rule.expand();
-        if (expansion === "" || !rule ) {
+        if (expansion === "") {
             return char;
         }
         return expansion;
@@ -124,8 +127,8 @@ export default class LSystem {
         }; // +y 180 degrees
 
         function drawBranch() {
-            self.turtle.moveForward(1.5);
             self.branchT.push(self.turtle.getTransformationMatrix());
+            self.turtle.moveForward(1.5);
             // Is this the equivalent of "move forward" ?
             // Draw from main
             // LSystem can update the shader with the transformation matrix
@@ -164,6 +167,7 @@ export default class LSystem {
 
 
     draw() : void {
+        console.log("grammar when we draw: " + this.grammar);
         // Push a copy of your current Turtle onto turtleHistory when we reach a
         // [ while drawing, and pop the top Turtle from the stack and make it 
         // the current Turtle when we encounter a ]

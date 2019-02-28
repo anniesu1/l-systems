@@ -36,7 +36,7 @@ export default class Turtle {
         // gamma += randZ;
 
         let outQuat: quat = quat.create();
-        quat.fromEuler(outQuat, alpha, beta, gamma);
+        quat.fromEuler(outQuat, alpha, beta, gamma); // Should be in degrees
         quat.multiply(this.orientation, this.orientation, outQuat);
     }
 
@@ -52,15 +52,22 @@ export default class Turtle {
 
     // Translate the turtle along its _dir_ vector by the distance indicated
     moveForward(dist: number) {
-        let newVec: vec3 = vec3.create();
+        let localForward: vec4 = vec4.create();
+        let R: mat4 = mat4.create();
+        mat4.fromQuat(R, this.orientation);
 
-        // TODO: update direction by the orientation quaternion matrix
+        // Update direction by the orientation quaternion matrix
+        vec4.transformMat4(localForward, vec4.fromValues(this.direction[0],
+                                                         this.direction[1],
+                                                         this.direction[2],
+                                                         1.0), R);
         
-        newVec = vec3.fromValues(this.direction[0] * dist,
-                                 this.direction[1] * dist,
-                                 this.direction[2] * dist);
+        let offset: vec3 = vec3.create();
+        offset = vec3.fromValues(localForward[0] * dist,
+                                 localForward[1] * dist,
+                                 localForward[2] * dist);
         let output: vec3 = vec3.create();
-        vec3.add(this.position, this.position, newVec);
+        vec3.add(this.position, this.position, offset);
         return output;
     };
 

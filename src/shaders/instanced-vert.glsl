@@ -43,7 +43,7 @@ void main()
     vec3 billboardPos = offset + newPos.x * u_CameraAxes[0] + newPos.y * u_CameraAxes[1];
 
 
-    gl_Position = u_ViewProj * vec4(billboardPos, 1.0);
+    gl_Position = u_ViewProj * newPos;
     //gl_Position = u_ViewProj * vs_Pos;
 
 }

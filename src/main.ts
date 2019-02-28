@@ -25,11 +25,14 @@ let square: Square;
 let screenQuad: ScreenQuad;
 let time: number = 0.0;
 
-let obj0: string = readTextFile('../objs/cylinder.obj');
+//let obj0: string = readTextFile('../objs/cylinder.obj');
+let obj0: string = readTextFile('https://raw.githubusercontent.com/..../l-systems/master/objs/cylinder.obj');
 let mesh: Mesh;
 
-let lotusFile: string = readTextFile('../objs/lotus.obj');
+let lotusFile: string = readTextFile('https://raw.githubusercontent.com/..../l-systems/master/objs/lotus.obj');
 let lotusMesh: Mesh;
+
+console.log('Loaded mesh files');
 
 
 let branchT: mat4[] = [];

@@ -59,7 +59,6 @@ export default class LSystem {
 
     expandSingleChar(char: string) : string {
         // Use the expansion rule(s) that correspond with the given char
-        // console.log("char = " + char);
         let rule: ExpansionRule;
         rule = this.expansionRules.get(char);
         if (!rule) {
@@ -83,7 +82,6 @@ export default class LSystem {
                 currOutput += this.expandSingleChar(output.charAt(j));
             }
             output = currOutput;
-            // console.log("after iteration " + i + ", expansion = " + output);
         }
 
         this.grammar = output;
@@ -94,43 +92,26 @@ export default class LSystem {
         let self = this;
 
         function popTurtle() {
-            console.log("****pop turtle****")
-            console.log("turtle depth before pop:" + self.turtle.depth);
-
-            console.log("turtle pos before pop:" + self.turtle.position);
             let poppedTurtle = self.turtleHistory.pop();
             self.turtle.writeOver(poppedTurtle);
-            
-            // console.log("popped");
-            console.log("turtle pos after pop:" + self.turtle.position);
         };
 
         function pushTurtle() {
-            console.log("****push turtle****");
             let copiedTurtle = self.turtle.makeCopy();
-            console.log("copiedTurtle pos: " + copiedTurtle.position);  
             self.turtleHistory.push(copiedTurtle);
             self.turtle.depth++;
         };
 
         function turnLeft() {
-            console.log("****turn left****");
             self.turtle.rotate(self.rotationAngle, 0.0, 0.0);
-            console.log("turtle orient = " + self.turtle.orientation);
-            //self.turtle.rotate(vec3.fromValues(1, 0, 0), self.rotationAngle);
         }; // +x
 
         function turnRight() {
-            console.log("****turn right****");
-            console.log("turtle stack = " + self.turtleHistory.length);
             self.turtle.rotate(-self.rotationAngle, 0.0, 0.0);
-            console.log("turtle orient = " + self.turtle.orientation);
-            //self.turtle.rotate(vec3.fromValues(1, 0, 0), -self.rotationAngle);
         }; // -x
 
         function pitchDown() {
             self.turtle.rotate(0.0, self.rotationAngle, 0.0);
-            //self.turtle.rotate(vec3.fromValues(0, 1, 0), self.rotationAngle);
         }; // +y
 
         function pitchUp() {
@@ -150,20 +131,13 @@ export default class LSystem {
         }; // +y 180 degrees
 
         function drawBranch() {
-            console.log("****draw branch****");
-            let branchHeight = 3.0 * Math.pow(self.turtle.heightFalloff, self.turtle.depth);
             self.turtle.moveForward(0.6 * Math.pow(0.8, self.turtle.depth));
-            // self.turtle.moveForward(branchHeight);
             self.branchT.push(self.turtle.getTransformationMatrix("branch"));
-            // Is this the equivalent of "move forward" ?
-            // Draw from main
-            // LSystem can update the shader with the transformation matrix
         };
 
         function drawLeaf() {
             let branchHeight = 3.0 * Math.pow(self.turtle.heightFalloff, self.turtle.depth);
             self.turtle.moveForward(branchHeight + 1.2 * Math.pow(0.8, self.turtle.depth));
-            //self.turtle.moveForward(1.5 * Math.pow(0.8, self.turtle.depth));
             self.leafT.push(self.turtle.getTransformationMatrix("leaf"));
         };
 
@@ -196,7 +170,7 @@ export default class LSystem {
 
 
     draw() : void {
-        console.log("grammar when we draw: " + this.grammar);
+        console.log("Grammar to draw: " + this.grammar);
         for (let i = 0; i < this.grammar.length; i++) {
             let currChar = this.grammar.charAt(i);
             let dr = this.drawingRules.get(currChar);

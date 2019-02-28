@@ -25,18 +25,16 @@ export default class ExpansionRule {
         
         let output = "";
 
-        // Iterate over each pair inside expansions
-        this.expansions.forEach((successor: string, prob: number) => {
-            sumProb += prob;
-            console.log("sumProb:" + sumProb);
+        // Iterate over each pair inside the expansions map, pick an expansion at "random"
+        for (const [key, value] of this.expansions) {
+            sumProb += key;
+            console.log(`Key: ${key} and Value: ${value}`);
             if (rand < sumProb) {
-                console.log("return successor: " + successor);
-                output = successor;
-                return;
+                output = value;
+                break;
             }
-        });
+        }
 
-        console.log("output: " + output);
         return output;
     }
 }

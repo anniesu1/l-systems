@@ -35,10 +35,20 @@ export default class LSystem {
 
         // Set expansion rules
         let fExpansions = new Map();
-        fExpansions.set(1.0, "F[-F]F[+F][F]"); // TODO: tweak expansion rule
-        // fExpansions.set(1.0, "F"); // TODO: tweak expansion rule
+        fExpansions.set(.8, "FF[-L]F[+F][L]"); // TODO: tweak expansion rules
+        fExpansions.set(.2, "FF");
         let fRule = new ExpansionRule("F", fExpansions);
         this.expansionRules.set("F", fRule);
+
+        let aExpansions = new Map();
+        aExpansions.set(1.0, "[&FL!A]/////’[&FL!A]///////’[&FL!A]");
+        let aRule = new ExpansionRule("A", aExpansions);
+        this.expansionRules.set("A", aRule);
+        
+        let sExpansions = new Map();
+        sExpansions.set(1.0, "FL");
+        let sRule = new ExpansionRule("S", sExpansions);
+        this.expansionRules.set("S", sRule);
     }
 
     expandSingleChar(char: string) : string {
@@ -143,6 +153,7 @@ export default class LSystem {
         };
 
         function drawLeaf() {
+            self.turtle.moveForward(1.0);
             self.leafT.push(self.turtle.getTransformationMatrix());
         };
 
@@ -176,16 +187,14 @@ export default class LSystem {
 
     draw() : void {
         console.log("grammar when we draw: " + this.grammar);
-        // Push a copy of your current Turtle onto turtleHistory when we reach a
-        // [ while drawing, and pop the top Turtle from the stack and make it 
-        // the current Turtle when we encounter a ]
-        // console.log("grammar inside draw(): " + this.grammar);
         for (let i = 0; i < this.grammar.length; i++) {
             let currChar = this.grammar.charAt(i);
             let dr = this.drawingRules.get(currChar);
+            if (!dr) {
+                return;
+            }
             let func = dr.drawFunc;
             if (func) {
-                // TODO: should I call the func with the current turtle and stack of turtles as arguments?
                 func();
             }
         }

@@ -28,6 +28,9 @@ let time: number = 0.0;
 let obj0: string = readTextFile('../objs/cylinder.obj'); // TODO: create an obj file
 let mesh: Mesh;
 
+let lotusFile: string = readTextFile('../objs/lotus.obj');
+let lotusMesh: Mesh;
+
 
 let branchT: mat4[] = [];
 let leafT: mat4[] = [];
@@ -45,10 +48,15 @@ function loadScene() {
   mesh = new Mesh(obj0, vec3.fromValues(0.0, 0.0, 0.0));
   mesh.create();
 
-  setTransformArrays();
+  lotusMesh = new Mesh(lotusFile, vec3.fromValues(0.0, 0.0, 0.0));
+  lotusMesh.create();
+
+  setTransformArrays(mesh, branchT);
+  setTransformArrays(lotusMesh, leafT);
+  console.log("leafT length" +  leafT.length);
 }
 
-function setTransformArrays() {
+function setTransformArrays(currMesh: Mesh, transforms: mat4[]) {
   // Set up instanced rendering data arrays here.
   // This example creates a set of positional
   // offsets and gradiated colors for a 100x100 grid
@@ -64,8 +72,8 @@ function setTransformArrays() {
   let transform4Array = [];
 
   // We will no longer need offsets (handled in the transformation array)
-  for (let i = 0; i < branchT.length; i++) {
-    let T = branchT[i];
+  for (let i = 0; i < transforms.length; i++) {
+    let T = transforms[i];
     console.log("T[i]" + T);
 
     // Dummy - todo, get rid of offsets
@@ -102,41 +110,8 @@ function setTransformArrays() {
     colorsArray.push(0.0);
     colorsArray.push(0.0);
     colorsArray.push(1.0);
-
   }
 
-  // for(let i = 0; i < n; i++) {
-  //   for(let j = 0; j < n; j++) {
-  //     offsetsArray.push(i);
-  //     offsetsArray.push(j);
-  //     offsetsArray.push(0);
-
-  //     transform1Array.push(0.5);
-  //     transform1Array.push(0.0);
-  //     transform1Array.push(0.0);
-  //     transform1Array.push(0.0);
-
-  //     transform2Array.push(0.0);
-  //     transform2Array.push(1.0);
-  //     transform2Array.push(0.0);
-  //     transform2Array.push(0.0);
-
-  //     transform3Array.push(0.0);
-  //     transform3Array.push(0.0);
-  //     transform3Array.push(1.0);
-  //     transform3Array.push(0.0);
-
-  //     transform4Array.push(0.0);
-  //     transform4Array.push(0.0);
-  //     transform4Array.push(0.0);
-  //     transform4Array.push(1.0);
-
-  //     colorsArray.push(i / n);
-  //     colorsArray.push(j / n);
-  //     colorsArray.push(1.0);
-  //     colorsArray.push(1.0); // Alpha channel
-  //   }
-  // }
   let offsets: Float32Array = new Float32Array(offsetsArray);
   let colors: Float32Array = new Float32Array(colorsArray);
   let transform1: Float32Array = new Float32Array(transform1Array);
@@ -148,9 +123,8 @@ function setTransformArrays() {
   //                        transform3, transform4);
   // square.setNumInstances(branchT.length);
 
-  mesh.setInstanceVBOs(offsets, colors, transform1, transform2, transform3, transform4);
-  mesh.setNumInstances(branchT.length);
-
+  currMesh.setInstanceVBOs(offsets, colors, transform1, transform2, transform3, transform4);
+  currMesh.setNumInstances(transforms.length);
 }
 
 function main() {
@@ -220,7 +194,7 @@ function main() {
 
     renderer.render(camera, flat, [screenQuad]);
     renderer.render(camera, instancedShader, [
-      mesh,
+      mesh, lotusMesh
     ]);
     // renderer.render(camera, flat, [mesh]);
     stats.end();

@@ -78,57 +78,64 @@ export default class LSystem {
         let self = this;
 
         function popTurtle() {
-            self.turtle = self.turtleHistory.pop();
+            console.log("****pop turtle****")
+            console.log("turtle depth before pop:" + self.turtle.depth);
+
+            console.log("turtle pos before pop:" + self.turtle.position);
+            let poppedTurtle = self.turtleHistory.pop();
+            self.turtle.writeOver(poppedTurtle);
+            
             // console.log("popped");
-            // console.log("self.turtle = " + self.turtle);
+            console.log("turtle pos after pop:" + self.turtle.position);
         };
 
         function pushTurtle() {
-            // console.log("this.rotationangle" + this.rotationAngle);
-            // console.log("this.turtle before pushing = " + this.turtle);
-
-            let target = new Turtle(vec3.fromValues(0, 0, 0), 
-                         quat.create(), 0);
-            let copiedTurtle = Object.assign(target, self.turtle);  
-            copiedTurtle.depth++; // Increase the recursion depth           
+            console.log("****push turtle****");
+            let copiedTurtle = self.turtle.makeCopy();
+            console.log("copiedTurtle pos: " + copiedTurtle.position);  
             self.turtleHistory.push(copiedTurtle);
-            // console.log("pushed turtle");
-            // console.log("self.turtle = " + self.turtle);
         };
 
         function turnLeft() {
+            console.log("****turn left****");
             self.turtle.rotate(self.rotationAngle, 0.0, 0.0);
+            console.log("turtle orient = " + self.turtle.orientation);
+            //self.turtle.rotate(vec3.fromValues(1, 0, 0), self.rotationAngle);
         }; // +x
 
         function turnRight() {
+            console.log("****turn right****");
             console.log("turtle stack = " + self.turtleHistory.length);
-            console.log("turtle = " + self.turtle);
             self.turtle.rotate(-self.rotationAngle, 0.0, 0.0);
+            console.log("turtle orient = " + self.turtle.orientation);
+            //self.turtle.rotate(vec3.fromValues(1, 0, 0), -self.rotationAngle);
         }; // -x
 
         function pitchDown() {
             self.turtle.rotate(0.0, self.rotationAngle, 0.0);
+            //self.turtle.rotate(vec3.fromValues(0, 1, 0), self.rotationAngle);
         }; // +y
 
         function pitchUp() {
-            self.turtle.rotate(0.0, -self.rotationAngle, 0.0);
+            //self.turtle.rotate(0.0, -self.rotationAngle, 0.0);
         }; // -y
 
         function rollLeft() {
-            self.turtle.rotate(0.0, 0.0, self.rotationAngle);
+            //self.turtle.rotate(0.0, 0.0, self.rotationAngle);
         }; // +z
 
         function rollRight() {
-            self.turtle.rotate(0.0, 0.0, -self.rotationAngle);
+            //self.turtle.rotate(0.0, 0.0, -self.rotationAngle);
         }; // -z
 
         function turnAround() {
-            self.turtle.rotate(0.0, Math.PI, 0.0);
+            //self.turtle.rotate(0.0, Math.PI, 0.0);
         }; // +y 180 degrees
 
         function drawBranch() {
-            self.branchT.push(self.turtle.getTransformationMatrix());
+            console.log("****draw branch****");
             self.turtle.moveForward(1.5);
+            self.branchT.push(self.turtle.getTransformationMatrix());
             // Is this the equivalent of "move forward" ?
             // Draw from main
             // LSystem can update the shader with the transformation matrix

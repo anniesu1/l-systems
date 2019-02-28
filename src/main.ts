@@ -17,7 +17,7 @@ import LSystem from './lsystem/LSystem';
 // This will be referred to by dat.GUI's functions that add GUI elements.
 const controls = {
   axiom: "F",
-  iterations: 3,
+  iterations: 1,
   rotation_angle: 30.0,
 };
 
@@ -45,6 +45,10 @@ function loadScene() {
   mesh = new Mesh(obj0, vec3.fromValues(0.0, 0.0, 0.0));
   mesh.create();
 
+  setTransformArrays();
+}
+
+function setTransformArrays() {
   // Set up instanced rendering data arrays here.
   // This example creates a set of positional
   // offsets and gradiated colors for a 100x100 grid
@@ -146,6 +150,7 @@ function loadScene() {
 
   mesh.setInstanceVBOs(offsets, colors, transform1, transform2, transform3, transform4);
   mesh.setNumInstances(branchT.length);
+
 }
 
 function main() {
@@ -203,6 +208,16 @@ function main() {
     flat.setTime(time++);
     gl.viewport(0, 0, window.innerWidth, window.innerHeight);
     renderer.clear();
+
+    // Update L-system TODO: do this efficiently
+    // lSystem.numIterations = controls.iterations;
+    // lSystem.grammar = controls.axiom;
+    // lSystem.rotationAngle = controls.rotation_angle;
+    // console.log("num iterations: " + lSystem.numIterations);
+    // lSystem.expandGrammar(); // This should print out the expanded grammar
+    // lSystem.draw(); // This updates branchT and leafT
+    // setTransformArrays();
+
     renderer.render(camera, flat, [screenQuad]);
     renderer.render(camera, instancedShader, [
       mesh,

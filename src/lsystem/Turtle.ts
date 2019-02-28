@@ -6,7 +6,8 @@ import { vec3, vec4, quat, mat4 } from 'gl-matrix';
 
 export default class Turtle {
     position: vec3 = vec3.fromValues(0.0, 0.0, 0.0);
-    direction: vec3 = vec3.fromValues(0, 1, 0);
+    up: vec3 = vec3.fromValues(0, 1, 0);
+    //currOrientation: vec3 = vec3.create();
     orientation: quat;
     depth: number = 0;
 
@@ -18,6 +19,22 @@ export default class Turtle {
 
     // Rotate the turtle's _dir_ vector by each of the 
     // Euler angles indicated by the input.
+
+    // rotate(axis: vec3, degrees: number) {
+    //     // Define rotation quaternion
+    //     let q: quat = quat.create();
+    //     vec3.normalize(axis, axis);
+    //     quat.setAxisAngle(q, axis, degrees * Math.PI / 180.0);
+    //     quat.normalize(q, q);
+    
+    //     // Update the orientation direction of our turtle
+    //     this.currOrientation = vec3.transformQuat(this.currOrientation, this.currOrientation, q);
+    //     vec3.normalize(this.currOrientation, this.currOrientation);
+    
+    //     // Save the current rotation in our turtle's quaternion
+    //     quat.rotationTo(this.orientation, vec3.fromValues(0, 1, 0), this.currOrientation);
+    // }
+
     rotate(alpha: number, beta: number, gamma: number) {
         // // Add randomness to the angles
         // var randX = Math.random();
@@ -35,8 +52,11 @@ export default class Turtle {
         // randZ -= 5; //set the range to -5 to 5
         // gamma += randZ;
 
+        // Create a quaternion to represent the rotation
         let outQuat: quat = quat.create();
         quat.fromEuler(outQuat, alpha, beta, gamma); // Should be in degrees
+
+        // Update the orientation of the turtle
         quat.multiply(this.orientation, this.orientation, outQuat);
     }
 
@@ -56,10 +76,10 @@ export default class Turtle {
         let R: mat4 = mat4.create();
         mat4.fromQuat(R, this.orientation);
 
-        // Update direction by the orientation quaternion matrix
-        vec4.transformMat4(localForward, vec4.fromValues(this.direction[0],
-                                                         this.direction[1],
-                                                         this.direction[2],
+        // Update forward by the orientation quaternion matrix
+        vec4.transformMat4(localForward, vec4.fromValues(this.up[0],
+                                                         this.up[1],
+                                                         this.up[2],
                                                          1.0), R);
         
         let offset: vec3 = vec3.create();
@@ -86,5 +106,22 @@ export default class Turtle {
         // Multiply together
         let transformation: mat4 = mat4.create();
         return mat4.multiply(transformation, T, R);
+    }
+
+    // Make a copy of this current Turtle
+    makeCopy() : Turtle {
+        let posCopy: vec3 = vec3.create();
+        vec3.copy(posCopy, this.position);
+        let orientCopy: quat = quat.create();
+        quat.copy(orientCopy, this.orientation);
+    
+        return new Turtle(posCopy, orientCopy, this.depth + 1);
+    }
+
+    // Write over the current info with that of the input Turtle
+    writeOver(turtle: Turtle) {
+        vec3.copy(this.position, turtle.position);
+        quat.copy(this.orientation, turtle.orientation);
+        this.depth = turtle.depth - 1;
     }
 }

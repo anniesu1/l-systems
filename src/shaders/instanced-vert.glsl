@@ -19,11 +19,13 @@ in vec4 vs_Transform4;
 
 out vec4 fs_Col;
 out vec4 fs_Pos;
+out vec4 fs_Nor;
 
 void main()
 {
     fs_Col = vs_Col;
     fs_Pos = vs_Pos;
+    fs_Nor = vs_Nor;
 
     vec3 offset = vs_Translate;
     mat4 t = mat4(vs_Transform1, vs_Transform2, vs_Transform3, vs_Transform4);

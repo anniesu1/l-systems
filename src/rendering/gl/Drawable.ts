@@ -128,8 +128,6 @@ abstract class Drawable {
   // Things Annie wrote
   bindTransform1() : boolean {
     if (this.transform1Generated) {
-      console.log("entering bindTransform1");
-
       gl.bindBuffer(gl.ARRAY_BUFFER, this.bufTransform1);
     }
     return this.transform1Generated;

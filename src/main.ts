@@ -25,13 +25,14 @@ let square: Square;
 let screenQuad: ScreenQuad;
 let time: number = 0.0;
 
-let obj0: string = readTextFile('../objs/wahoo.obj'); // TODO: create an obj file
+let obj0: string = readTextFile('../objs/dodecahedron.obj'); // TODO: create an obj file
 let mesh: Mesh;
 
 
 let branchT: mat4[] = [];
 let leafT: mat4[] = [];
-let lSystem: LSystem = new LSystem(controls.axiom, controls.iterations, controls.rotation_angle, branchT, leafT);
+let lSystem: LSystem = new LSystem(controls.axiom, controls.iterations, 
+                                   controls.rotation_angle, branchT, leafT);
 lSystem.expandGrammar(); // This should print out the expanded grammar
 lSystem.draw(); // This updates branchT and leafT
 
@@ -92,7 +93,7 @@ function loadScene() {
     transform4Array.push(T[14]);
     transform4Array.push(T[15]);
 
-    // Color
+    // Color (red for now)
     colorsArray.push(1.0);
     colorsArray.push(0.0);
     colorsArray.push(0.0);
@@ -139,9 +140,12 @@ function loadScene() {
   let transform3: Float32Array = new Float32Array(transform3Array);
   let transform4: Float32Array = new Float32Array(transform4Array);
 
-  square.setInstanceVBOs(offsets, colors, transform1, transform2, 
-                         transform3, transform4);
-  square.setNumInstances(branchT.length); // grid of "particles"
+  // square.setInstanceVBOs(offsets, colors, transform1, transform2, 
+  //                        transform3, transform4);
+  // square.setNumInstances(branchT.length);
+
+  mesh.setInstanceVBOs(offsets, colors, transform1, transform2, transform3, transform4);
+  mesh.setNumInstances(branchT.length);
 }
 
 function main() {
@@ -198,9 +202,9 @@ function main() {
     renderer.clear();
     renderer.render(camera, flat, [screenQuad]);
     renderer.render(camera, instancedShader, [
-      square,
+      mesh,
     ]);
-    renderer.render(camera, flat, [mesh]);
+    // renderer.render(camera, flat, [mesh]);
     stats.end();
 
     // Tell the browser to call `tick` again whenever it renders a new frame

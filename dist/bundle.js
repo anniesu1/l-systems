@@ -6094,10 +6094,9 @@ const controls = {
 let square;
 let screenQuad;
 let time = 0.0;
-//let obj0: string = readTextFile('../objs/cylinder.obj');
-let obj0 = Object(__WEBPACK_IMPORTED_MODULE_7__globals__["b" /* readTextFile */])('https://raw.githubusercontent.com/..../l-systems/master/objs/cylinder.obj');
+let obj0 = Object(__WEBPACK_IMPORTED_MODULE_7__globals__["b" /* readTextFile */])('./src/cylinder.obj');
 let mesh;
-let lotusFile = Object(__WEBPACK_IMPORTED_MODULE_7__globals__["b" /* readTextFile */])('https://raw.githubusercontent.com/..../l-systems/master/objs/lotus.obj');
+let lotusFile = Object(__WEBPACK_IMPORTED_MODULE_7__globals__["b" /* readTextFile */])('./src/lotus.obj');
 let lotusMesh;
 console.log('Loaded mesh files');
 let branchT = [];
@@ -6134,7 +6133,6 @@ function setTransformArrays(currMesh, transforms, col) {
     // We will no longer need offsets (handled in the transformation array)
     for (let i = 0; i < transforms.length; i++) {
         let T = transforms[i];
-        console.log("T[i]" + T);
         // Dummy - todo, get rid of offsets
         offsetsArray.push(0);
         offsetsArray.push(0);
@@ -6232,13 +6230,9 @@ function main() {
         let doUpdate = (controls.iterations != flagIter) || (controls.axiom != flagAxiom) ||
             (controls.rotation_angle != flagAngle);
         if (doUpdate) {
-            console.log('doUpdate');
             flagIter = controls.iterations;
             flagAxiom = controls.axiom;
             flagAngle = controls.rotation_angle;
-            console.log('flagIter: ' + flagIter);
-            console.log('flagAxiom: ' + flagAxiom);
-            console.log('flagAngle: ' + flagAngle);
             // Clear transformation matrices and make a new L-System
             branchT = [];
             leafT = [];

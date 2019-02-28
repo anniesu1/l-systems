@@ -15,8 +15,10 @@ By Annie Su, anniesu1
 ![](final4Iter.png)
 
 ## Inspiration
+Flower sprigs
 ![](lavenderSprig.jpg)
-Lavender sprigs
+![](sprig1.jpg)
+![](sprig2.jpg)
 
 ## Implementation details and features
 - L-System structure: I created a collection of classes to represent an L-System. The `LSystem` is the overarching class that holds together a set of `ExpansionRule`s, `DrawingRule`s, and a `Turtle` to track the current state of the drawing (with attributes such as orientation and position). 
